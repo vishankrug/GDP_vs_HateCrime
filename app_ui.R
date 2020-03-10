@@ -4,6 +4,7 @@ sidebar_content <- sidebarPanel(
   sliderInput(
     inputId = "year",
     label = "Year",
+    sep = "",
     min = 1997,
     max = 2016,
     value = c(1997, 2016)
