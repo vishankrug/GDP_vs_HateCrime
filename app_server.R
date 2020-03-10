@@ -24,7 +24,7 @@ server <- function(input, output) {
     plot <- ggplot(data = gdp_data_all) +
     geom_polygon(aes(x = long, y = lat, group= group, fill = gdp_change)) +
     coord_quickmap() +
-    scale_fill_distiller(palette = "Purples") +
+    scale_fill_distiller(palette = "Spectral") +
     theme_void() +
     labs(title = "Percent Growth in GDP", fill = "Change")
     
