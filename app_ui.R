@@ -154,7 +154,7 @@ change_in_GDP_over_time <- tabPanel(
 
 diversity_vs_GDP <- tabPanel(
   title = "Diversity vs. GDP",
-  titlePanel("How has diversity affected GDP growth by state?"),
+  h1("How has diversity affected GDP growth by state?"),
   p(strong("Author"), ": Vishank Rughwani"),
   sidebarLayout(
     sidebar_content_diversity,
