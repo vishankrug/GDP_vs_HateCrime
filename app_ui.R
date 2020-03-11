@@ -14,7 +14,7 @@ min_gdp_growth <- trunc(gdp_by_state_mutated_growth
                         %>% filter ( growth_in_GDP == min(growth_in_GDP)) 
                         %>% pull(growth_in_GDP))
 
-states <- c(gdp_by_state %>% pull(NAME))
+states <- c("State", gdp_by_state %>% pull(NAME))
 
 sidebar_content <- sidebarPanel(
   sliderInput(
@@ -28,17 +28,28 @@ sidebar_content <- sidebarPanel(
 )
 
 sidebar_content_diversity <- sidebarPanel(
+  p("Move the slider to limit the range for GDP Growth."),
   sliderInput(
-    inputId = "gdp",
-    label = "GDP",
+    inputId = "gdp_input",
+    label = "GDP Growth",
     min = min_gdp_growth,
     max = max_gdp_growth,
     value = c(min_gdp_growth, max_gdp_growth)
   ),
+  p("The next two inputs are to compare two states. *To deselect please choose 'State'"),
+  p("Enter the first state you want to compare:"),
   selectInput(
     inputId = "state_one_choice",
     label = "State 1",
     choice = states,
+    selected = "State"
+  ),
+  p("Enter the second state you want to compare:"),
+  selectInput(
+    inputId = "state_two_choice",
+    label = "State 2",
+    choice = states,
+    selected = "State"
   )
 )
 
