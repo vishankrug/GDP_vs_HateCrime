@@ -1,9 +1,40 @@
 library("shiny")
-
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
+# (Isabella) voter data
+voter_choices <- radioButtons(inputId = "voter_values", 
+             label = "Possible comparison values",
+             choices = list("Median household income (in $10,000s)" = "median_household_income", 
+                                "Percent of population unemployed (seasonally adjusted)" = "share_unemployed_seasonal",
+                                "Percent of population in metro areas" = "share_population_in_metro_areas",
+                                "Percent of adults 25 and older with a high school degree" = "share_population_with_high_school_degree",
+                                "Percent of population that are not citizens" = "share_non_citizen",
+                                "Percent of white residents living in poverty" = "share_white_poverty",
+                                "Gini index (an inequality coefficient)" = "gini_index",
+                                "Percent of population that is not white" = "share_non_white",
+                                "Change in GDP, 1997-2016" = "gdp_1997_2016",
+                                "Change in GDP, 2008-2016" = "gdp_2008_2016"),
+             selected = "median_household_income"
+)
+
+voter_panel <- tabPanel(
+  title = "Voting Factors",
+  h2("What factors affect how people vote?"),
+  sidebarLayout(
+    sidebarPanel(
+      voter_choices
+    ),
+    mainPanel(
+      plotOutput(outputId = "voter_plot"),
+      p(textOutput(outputId = "correlation_results"))
+    )
+  )
+)
+
+
 #Mohit's Part
+
 sidebar_content <- sidebarPanel(
   
   selectInput(
@@ -30,7 +61,7 @@ main_content <- mainPanel(
 
 final_panel <- tabPanel(
   "Economy Trends",
-  titlePanel("GDP/Percent Contribution of every state to the US Economy and their diverse classifications"),
+  h2("GDP/Percent Contribution of every state to the US Economy and their diverse classifications"),
   sidebarLayout(
     sidebar_content,
     main_content
@@ -43,23 +74,6 @@ ui <- navbarPage(
   final_panel
 )
 
-#######
-
-gdp_by_state_mutated_growth <- gdp_by_state %>% 
-                               select(NAME, GDP_in_dollars_2014:GDP_in_dollars_2016) %>% 
-                               mutate(growth_in_GDP = ((GDP_in_dollars_2016 - GDP_in_dollars_2014)/GDP_in_dollars_2014)*100)
-
-mean_growth <- round(mean(gdp_by_state_mutated_growth$growth_in_GDP), 2)
-
-max_gdp_growth <- ceiling(gdp_by_state_mutated_growth 
-                          %>% filter ( growth_in_GDP == max(growth_in_GDP)) 
-                          %>% pull(growth_in_GDP))
-min_gdp_growth <- trunc(gdp_by_state_mutated_growth 
-                        %>% filter ( growth_in_GDP == min(growth_in_GDP)) 
-                        %>% pull(growth_in_GDP))
-
-states <- c("State", gdp_by_state %>% pull(NAME))
-
 # Jaimie Jin
 sidebar_content_time <- sidebarPanel(
   sliderInput(
@@ -71,6 +85,38 @@ sidebar_content_time <- sidebarPanel(
     value = c(1997, 2016)
   )
 )
+
+main_content_time <- mainPanel(
+  plotOutput(
+    outputId = "plot_time"
+  )
+)
+
+change_in_GDP_over_time <- tabPanel(
+  title = "Change in GDP over time",
+  h2("How has each state's GDP changed over time?"),
+  sidebarLayout(
+    sidebar_content_time,
+    main_content_time
+  )
+)
+
+
+#Vishank
+gdp_by_state_mutated_growth <- gdp_by_state %>% 
+  select(NAME, GDP_in_dollars_2014:GDP_in_dollars_2016) %>% 
+  mutate(growth_in_GDP = ((GDP_in_dollars_2016 - GDP_in_dollars_2014)/GDP_in_dollars_2014)*100)
+
+mean_growth <- round(mean(gdp_by_state_mutated_growth$growth_in_GDP), 2)
+
+max_gdp_growth <- ceiling(gdp_by_state_mutated_growth 
+                          %>% filter ( growth_in_GDP == max(growth_in_GDP)) 
+                          %>% pull(growth_in_GDP))
+min_gdp_growth <- trunc(gdp_by_state_mutated_growth 
+                        %>% filter ( growth_in_GDP == min(growth_in_GDP)) 
+                        %>% pull(growth_in_GDP))
+
+states <- c("State", gdp_by_state %>% pull(NAME))
 
 sidebar_content_diversity <- sidebarPanel(
   p("Move the slider to limit the range for GDP Growth."),
@@ -100,18 +146,27 @@ sidebar_content_diversity <- sidebarPanel(
   p("*Please reset the GDP growth scale if both chosen states do not show")
 )
 
-main_content_time <- mainPanel(
-  plotOutput(
-    outputId = "plot_time"
-  )
-)
-
 main_content_diversity <- mainPanel(
   plotOutput(
     outputId = "plot_diversity"
   )
 )
 
+
+diversity_vs_GDP <- tabPanel(
+  title = "Diversity vs. GDP",
+  h2("How has diversity affected GDP growth by state?"),
+  p(strong("Author"), ": Vishank Rughwani"),
+  sidebarLayout(
+    sidebar_content_diversity,
+    main_content_diversity
+  ),
+  p("On average, most of the states with the highest GDP growth have a good amount of diversity. Most of the places with under 0.2 population diversity do have growth, however, it's is not as pronounced as the other states. 
+    Although, this graph can be looked at from many perspectives and there is no objective answer to this question as of yet. For the most part the data seems to be inconclusive. This may be the case because there are a lot of different factors that effect GDP growth and I only took into account diversity. 
+    On average though, the states GDP's have increased. The mean growth is ", strong(mean_growth))
+)
+
+#Home page
 home <- tabPanel(
   title = ("Home"),
   
@@ -131,9 +186,9 @@ home <- tabPanel(
     In understanding this, we can possibly figure out how to prevent more hate incidents in the future."
     ),
   
-  p("Our first dataset comes from an open Github contributor called dmil. The data is sourced from the Southern Poverty Law Center, a well-known nonprofit that specializes in monitoring hate crimes. 
+  p("Our first dataset comes from an open Github contributor called fivethirtyeight. The data is sourced from the Southern Poverty Law Center, a well-known nonprofit that specializes in monitoring hate crimes. 
      Although there are known instances of them mislabeling people/events, they are the best source for quickly released data on hate crimes, as FBI data tends to take many months to analyze.",
-     a(href = "https://github.com/Shoklan/data-projects/tree/master/dataworld/gdp-per-state", em("(source)"))
+     a(href = "https://github.com/fivethirtyeight/data/tree/master/hate-crimes", em("(source)"))
     ),
   
   p("Our second dataset comes from ArcGIS HUB and was updated just last year. It is shared by user lisa_berry and puts down services.arcgis.com as the source. 
@@ -152,23 +207,7 @@ change_in_GDP_over_time <- tabPanel(
   )
 )
 
-diversity_vs_GDP <- tabPanel(
-  title = "Diversity vs. GDP",
-  titlePanel("How has diversity affected GDP growth by state?"),
-  p(strong("Author"), ": Vishank Rughwani"),
-  sidebarLayout(
-    sidebar_content_diversity,
-    main_content_diversity
-  ),
-  p("On average, most of the states with the highest GDP growth have a good amount of diversity. Most of the places with under 0.2 population diversity do have growth, however, it's is not as pronounced as the other states. 
-    Although, this graph can be looked at from many perspectives and there is no objective answer to this question as of yet. For the most part the data seems to be inconclusive. This may be the case because there are a lot of different factors that effect GDP growth and I only took into account diversity. 
-    On average though, the states GDP's have increased. The mean growth is ", strong(mean_growth))
-)
-
-
 
 ui <- navbarPage(title = "GDP and Hate Crimes",
-                 home,
-                 change_in_GDP_over_time,
-                 diversity_vs_GDP)
-
+                 home, change_in_GDP_over_time, voter_panel,
+                 final_panel, diversity_vs_GDP)
