@@ -162,9 +162,9 @@ home <- tabPanel(
     In understanding this, we can possibly figure out how to prevent more hate incidents in the future."
     ),
   
-  p("Our first dataset comes from an open Github contributor called dmil. The data is sourced from the Southern Poverty Law Center, a well-known nonprofit that specializes in monitoring hate crimes. 
+  p("Our first dataset comes from an open Github contributor called fivethirtyeight. The data is sourced from the Southern Poverty Law Center, a well-known nonprofit that specializes in monitoring hate crimes. 
      Although there are known instances of them mislabeling people/events, they are the best source for quickly released data on hate crimes, as FBI data tends to take many months to analyze.",
-     a(href = "https://github.com/Shoklan/data-projects/tree/master/dataworld/gdp-per-state", em("(source)"))
+     a(href = "https://github.com/fivethirtyeight/data/tree/master/hate-crimes", em("(source)"))
     ),
   
   p("Our second dataset comes from ArcGIS HUB and was updated just last year. It is shared by user lisa_berry and puts down services.arcgis.com as the source. 
@@ -199,8 +199,8 @@ diversity_vs_GDP <- tabPanel(
 
 
 ui <- navbarPage(title = "GDP and Hate Crimes",
-                 change_in_GDP_over_time, voter_panel,
                  home,
+                 change_in_GDP_over_time, voter_panel,
                  change_in_GDP_over_time,
                  diversity_vs_GDP)
 
