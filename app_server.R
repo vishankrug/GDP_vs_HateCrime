@@ -50,6 +50,37 @@ server <- function(input, output) {
     
     return(voter_return)
   })
+  
+  output$correlation_results <- renderText({
+    correlation <- cor(x = voter_source$share_voters_voted_trump, y = voter_source[input$voter_values], use = "complete.obs") %>% 
+      round(digits = 4)
+    sentence_finish <- list("median_household_income" = "median household income",
+                       "share_unemployed_seasonal" = "percent of the population that is seasonally unemployed",
+                       "share_population_in_metro_areas" = "percent of the population living in metro areas",
+                       "share_population_with_high_school_degree" = "percent of adults 25 and older with a high school degree",
+                       "share_non_citizen" = "percent of the population that are not US citizens",
+                       "share_white_poverty" = "percent of white residents living in poverty",
+                       "gini_index" = "Gini index, an inequality coefficient",
+                       "share_non_white" = "percent of the population that is not white",
+                       "gdp_1997_2016" = "change in GDP from 1997-2016",
+                       "gdp_2008_2016" = "change in GDP from 2008-2016")
+    if (correlation >= 0 & correlation < 0.4){
+      cor_finding <- "weak positive"
+    } else if (correlation >= 0.4 & correlation < 0.6){
+      cor_finding <- "moderately positive"
+    } else if (correlation >= 0.6 & correlation <= 1){
+      cor_finding <- "strong positive"
+    } else if (correlation < 0 & correlation > -0.4){
+      cor_finding <- "weak negative"
+    } else if (correlation <= -0.4 & correlation > -0.6){
+      cor_finding <- "moderately negative"
+    } else {
+      cor_finding <- "strong negative"
+    } 
+    cor_statement <- paste0("There is a ", cor_finding, " correlation between how people voted in 2016 and the ", 
+                           sentence_finish[input$voter_values], ", with a correlation coefficient of ", correlation, ".")
+    return(cor_statement)
+  })
 } 
   
 
@@ -74,7 +105,7 @@ axis_names <- list("share_voters_voted_trump" = "Population that voted for Trump
                    "share_unemployed_seasonal" = "Percent of population unemployed (seasonally adjusted)",
                    "share_population_in_metro_areas" = "Percent of population in metro areas",
                    "share_population_with_high_school_degree" = "Percent of adults 25 and older with a high school degree",
-                   "share_non_citizen" = "Percent of population that are not citizens",
+                   "share_non_citizen" = "Percent of population that are not US citizens",
                    "share_white_poverty" = "Percent of white residents living in poverty",
                    "gini_index" = "Gini index (an inequality coefficient)",
                    "share_non_white" = "Percent of population that is not white",

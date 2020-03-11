@@ -17,13 +17,14 @@ voter_choices <- radioButtons(inputId = "voter_values",
 
 voter_panel <- tabPanel(
   title = "Voting Factors",
-  titlePanel("What factors affect how people vote?"),
+  h2("What factors affect how people vote?"),
   sidebarLayout(
     sidebarPanel(
       voter_choices
     ),
     mainPanel(
-      plotOutput(outputId = "voter_plot")
+      plotOutput(outputId = "voter_plot"),
+      p(textOutput(outputId = "correlation_results"))
     )
   )
 )
