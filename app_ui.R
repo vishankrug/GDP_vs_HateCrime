@@ -1,5 +1,21 @@
 library("shiny")
 
+hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
+gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
+
+gdp_by_state_mutated_growth <- gdp_by_state %>% 
+                               select(NAME, GDP_in_dollars_2014:GDP_in_dollars_2016) %>% 
+                               mutate(growth_in_GDP = ((GDP_in_dollars_2016 - GDP_in_dollars_2014)/GDP_in_dollars_2014)*100)
+
+max_gdp_growth <- ceiling(gdp_by_state_mutated_growth 
+                          %>% filter ( growth_in_GDP == max(growth_in_GDP)) 
+                          %>% pull(growth_in_GDP))
+min_gdp_growth <- trunc(gdp_by_state_mutated_growth 
+                        %>% filter ( growth_in_GDP == min(growth_in_GDP)) 
+                        %>% pull(growth_in_GDP))
+
+states <- c(gdp_by_state %>% pull(NAME))
+
 sidebar_content <- sidebarPanel(
   sliderInput(
     inputId = "year",
@@ -11,14 +27,35 @@ sidebar_content <- sidebarPanel(
   )
 )
 
+sidebar_content_diversity <- sidebarPanel(
+  sliderInput(
+    inputId = "gdp",
+    label = "GDP",
+    min = min_gdp_growth,
+    max = max_gdp_growth,
+    value = c(min_gdp_growth, max_gdp_growth)
+  ),
+  selectInput(
+    inputId = "state_one_choice",
+    label = "State 1",
+    choice = states,
+  )
+)
+
 main_content <- mainPanel(
   plotOutput(
     outputId = "plot"
   )
 )
 
+main_content_diversity <- mainPanel(
+  plotOutput(
+    outputId = "plot_diversity"
+  )
+)
+
 home <- tabPanel(
-  title = "Home",
+  title = ("Home"),
   
   titlePanel("Introduction"),
   
@@ -44,7 +81,7 @@ home <- tabPanel(
   p("Our second dataset comes from ArcGIS HUB and was updated just last year. It is shared by user lisa_berry and puts down services.arcgis.com as the source. 
      The data itself is from US Bureau of Economic Analysis which is reputable as a agency that has better access to this type of data.",
      a(href = "https://hub.arcgis.com/datasets/a2a8826c4ba44f89a684000fe7c05b8c_0", "(source)")
-    ),
+    )
   )
 
 
@@ -60,9 +97,10 @@ change_in_GDP_over_time <- tabPanel(
 diversity_vs_GDP <- tabPanel(
   title = "Diversity vs. GDP",
   titlePanel("How has diversity affected GDP growth by state?"),
-  #sidebarLayout(
-  
-  #)
+  sidebarLayout(
+    sidebar_content_diversity,
+    main_content_diversity
+  )
 )
 
 
