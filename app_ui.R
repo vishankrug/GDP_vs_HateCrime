@@ -3,6 +3,50 @@ library("shiny")
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
+#Mohit's Part
+sidebar_content <- sidebarPanel(
+  
+  selectInput(
+    inputId = "feature_choice",
+    label = "GDP/Percent Contribution",
+    choices = c("GDP_in_dollars_2016","Percent_of_US_2016"),
+    selected = NULL
+  ),
+  
+  selectInput(
+    inputId = "color_choice",
+    label = "Choice of Diversity Characteristics",
+    choices = c("share_non_citizen", "share_non_white", "share_unemployed_seasonal"),
+    selected = NULL
+  )
+)
+
+main_content <- mainPanel(
+  plotOutput("plot"),
+  p(
+    "Authored By: Mohit Sane"
+  )
+)
+
+final_panel <- tabPanel(
+  "Economy Trends",
+  titlePanel("GDP/Percent Contribution of every state to the US Economy and their diverse classifications"),
+  sidebarLayout(
+    sidebar_content,
+    main_content
+  )
+)
+
+
+ui <- navbarPage(
+  title = "Diversity affecting US Economy",
+  final_panel
+)
+
+#######
+
+
+
 gdp_by_state_mutated_growth <- gdp_by_state %>% 
                                select(NAME, GDP_in_dollars_2014:GDP_in_dollars_2016) %>% 
                                mutate(growth_in_GDP = ((GDP_in_dollars_2016 - GDP_in_dollars_2014)/GDP_in_dollars_2014)*100)
