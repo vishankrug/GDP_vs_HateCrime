@@ -1,44 +1,33 @@
 library("shiny")
 
-<<<<<<< HEAD
-ui <- navbarPage(title = "")
+voter_choices <- radioButtons(inputId = "voter_values", 
+             label = "Possible comparison values",
+             choices = list("Median household income (in $10,000s)" = "median_household_income", 
+                                "Percent of population unemployed (seasonally adjusted)" = "share_unemployed_seasonal",
+                                "Percent of population in metro areas" = "share_population_in_metro_areas",
+                                "Percent of adults 25 and older with a high school degree" = "share_population_with_high_school_degree",
+                                "Percent of population that are not citizens" = "share_non_citizen",
+                                "Percent of white residents living in poverty" = "share_white_poverty",
+                                "Gini index (an inequality coefficient)" = "gini_index",
+                                "Percent of population that is not white" = "share_non_white",
+                                "Change in GDP, 1997-2016" = "gdp_1997_2016",
+                                "Change in GDP, 2008-2016" = "gdp_2008_2016"),
+             selected = "median_household_income"
+)
 
 voter_panel <- tabPanel(
-  title = "Voting",
+  title = "Voting Factors",
   titlePanel("What factors affect how people vote?"),
   sidebarLayout(
     sidebarPanel(
-      radioButtons(inputId = "voter_values", 
-                   label = "Possible comparison values",
-                   choiceNames = list("Median household income", 
-                              "Percent of population unemployed (seasonally adjusted)",
-                              "Percent of population in metro areas",
-                              "Percent of adults 25 and older with a high school degree",
-                              "Percent of population that are not citizens",
-                              "Percent of white residents living in poverty",
-                              "Gini index (an inequality coefficient)",
-                              "Percent of population that is not white",
-                              "Change in GDP, 1997-2016",
-                              "Change in GDP, 2008-2016"),
-                   choiceValues = list("median_household_income",
-                                   "share_unemployed_seasonal",
-                                   "share_population_in_metro_areas",
-                                   "share_population_with_high_school_degree",
-                                   "share_non_citizen",
-                                   "share_white_poverty",
-                                   "gini_index",
-                                   "share_non_white",
-                                   "gdp_1997_2016",
-                                   "gdp_2008_2016")
-                   )
+      voter_choices
     ),
     mainPanel(
       plotOutput(outputId = "voter_plot")
     )
   )
-  
 )
-=======
+
 sidebar_content <- sidebarPanel(
   sliderInput(
     inputId = "year",
@@ -67,5 +56,5 @@ change_in_GDP_over_time <- tabPanel(
 
 
 ui <- navbarPage(title = "GDP and Hate Crimes",
-                 change_in_GDP_over_time)
->>>>>>> master
+                 change_in_GDP_over_time, voter_panel)
+

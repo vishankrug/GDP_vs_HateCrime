@@ -8,8 +8,6 @@ gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
 
 
-
-
 server <- function(input, output) {
   output$plot <- renderPlot({ 
     map_coor <- map_data("state") %>% mutate(state_name = toupper(region))
@@ -30,4 +28,62 @@ server <- function(input, output) {
     
     return(plot)
   })
-}
+  
+  output$voter_plot <- renderPlot({
+    voter_data <- voter_source %>% 
+      select("share_voters_voted_trump", "voters_voted_trump", "state", input$voter_values)
+    
+    voter_names <- voter_data %>% 
+      select(-c("state", "voters_voted_trump"))
+    
+    voter_data <- gather(voter_data, key = category, value = value, -state, -voters_voted_trump)
+    
+    axis_values <- c(axis_names[colnames(voter_names)]) %>% 
+      unlist()
+    
+    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, voters_voted_trump))) + 
+      geom_point(mapping = aes(y = value, shape = category, color = category)) +
+      labs(title = "Voting", x = "States", y = "Value", color = "Category", shape = "Category") +
+      theme(axis.text.x = element_text(size = 8, angle = 90)) +
+      scale_shape(labels = axis_values) + 
+      scale_color_discrete(labels = axis_values)
+    
+    return(voter_return)
+  })
+} 
+  
+
+# data for the voter panel
+gdp_rate_of_change <- gdp_by_state %>% 
+    select("NAME", "GDP_in_dollars_1997":"GDP_in_dollars_2016") %>% 
+    gather(key = year, value = gdp, -NAME) %>% 
+    group_by(NAME) %>% 
+    arrange(year, .by_group = TRUE) %>% 
+    mutate("percent_change" = (((gdp / lag(gdp)) - 1) * 100))
+
+avg_change_1997_2016 <- summarize(gdp_rate_of_change, "gdp_1997_2016" = mean(percent_change, na.rm = TRUE)) %>% 
+  rename("state" = NAME)
+
+avg_change_2008_2016 <- gdp_rate_of_change %>% 
+  filter(year > "GDP_in_dollars_2008") %>% 
+  summarize("gdp_2008_2016" = mean(percent_change, na.rm = TRUE)) %>% 
+  rename("state" = NAME)
+
+axis_names <- list("share_voters_voted_trump" = "Population that voted for Trump (%)",
+                   "median_household_income" = "Median household income (in $10,000s)",
+                   "share_unemployed_seasonal" = "Percent of population unemployed (seasonally adjusted)",
+                   "share_population_in_metro_areas" = "Percent of population in metro areas",
+                   "share_population_with_high_school_degree" = "Percent of adults 25 and older with a high school degree",
+                   "share_non_citizen" = "Percent of population that are not citizens",
+                   "share_white_poverty" = "Percent of white residents living in poverty",
+                   "gini_index" = "Gini index (an inequality coefficient)",
+                   "share_non_white" = "Percent of population that is not white",
+                   "gdp_1997_2016" = "Change in GDP, 1997-2016",
+                   "gdp_2008_2016" = "Change in GDP, 2008-2016")
+
+voter_source<- hate_crimes %>% 
+  left_join(avg_change_1997_2016, by = "state") %>% 
+  left_join(avg_change_2008_2016, by = "state") %>% 
+  mutate("voters_voted_trump" = share_voters_voted_trump) %>% 
+  mutate("median_household_income" = median_household_income/10000) %>% 
+  select(-c("hate_crimes_per_100k_splc", "avg_hatecrimes_per_100k_fbi"))
