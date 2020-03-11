@@ -31,3 +31,4 @@ server <- function(input, output) {
     return(plot)
   })
 }
+
