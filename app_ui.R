@@ -1,10 +1,6 @@
 library("shiny")
-<<<<<<< HEAD
 library("dplyr")
 library("tidyr")
-
-=======
->>>>>>> c027ae73f8832444ef385d59b0545238b21ffb48
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
@@ -40,7 +36,6 @@ voter_panel <- tabPanel(
 
 
 #Mohit's Part
-<<<<<<< HEAD
 hate_crimes_mohit <- hate_crimes%>% filter(hate_crimes$avg_hatecrimes_per_100k_fbi > 2) %>% 
         select("state", "share_non_citizen", "share_non_white", 
                "share_unemployed_seasonal", "avg_hatecrimes_per_100k_fbi")
@@ -52,10 +47,6 @@ non_citizens <- median(hate_crimes_mohit$share_non_citizen)
 percent <- median(gdp_by_state_mohit$Percent_of_US_2016)
 
 sidebar_content_mohit <- sidebarPanel(
-=======
-
-sidebar_content <- sidebarPanel(
->>>>>>> c027ae73f8832444ef385d59b0545238b21ffb48
   
   selectInput(
     inputId = "feature_choice",

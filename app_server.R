@@ -8,14 +8,8 @@ gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
 # data wrangling up here if you do not need to use input variables for it
 
-<<<<<<< HEAD
 # make your plots in here 
 server <- function(input, output) {
-=======
-#Mohit's Part
-selected_data_crimes <- hate_crimes%>% filter(hate_crimes$avg_hatecrimes_per_100k_fbi > 2) %>% 
-  select("state", "share_non_citizen", "share_non_white", 
-         "share_unemployed_seasonal", "avg_hatecrimes_per_100k_fbi")
 
 # data for the voter panel (Isabella)
 gdp_rate_of_change <- gdp_by_state %>% 
@@ -76,7 +70,6 @@ voter_source<- hate_crimes %>%
   })
   
 # GDP progression (Jaimie)
->>>>>>> c027ae73f8832444ef385d59b0545238b21ffb48
   output$plot_time <- renderPlot({ 
     map_coor <- map_data("state") %>% mutate(state_name = toupper(region))
     
@@ -123,7 +116,6 @@ voter_source<- hate_crimes %>%
     return(plot_vishank)
   })
   
-<<<<<<< HEAD
   
     output$mohit_plot <- renderPlot({  
       
@@ -149,8 +141,6 @@ voter_source<- hate_crimes %>%
     }) 
   
   
-}
-=======
 # voter connections (Isabella)
   output$voter_plot <- renderPlot({
     voter_data <- voter_source %>% 
@@ -206,6 +196,4 @@ voter_source<- hate_crimes %>%
   })
 } 
 
-
->>>>>>> c027ae73f8832444ef385d59b0545238b21ffb48
 
