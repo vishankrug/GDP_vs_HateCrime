@@ -145,7 +145,7 @@ home <- tabPanel(
 
 change_in_GDP_over_time <- tabPanel(
   title = "Change in GDP over time",
-  titlePanel("How has each state's GDP changed over time?"),
+  h1("How has each state's GDP changed over time?"),
   sidebarLayout(
     sidebar_content_time,
     main_content_time
