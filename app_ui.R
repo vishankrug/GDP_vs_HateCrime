@@ -74,6 +74,7 @@ sidebar_content_time <- sidebarPanel(
 
 sidebar_content_diversity <- sidebarPanel(
   p("Move the slider to limit the range for GDP Growth."),
+  p(em("Note: The graph may take some time to load.")),
   sliderInput(
     inputId = "gdp_input",
     label = "GDP Growth",
@@ -132,12 +133,12 @@ home <- tabPanel(
   
   p("Our first dataset comes from an open Github contributor called dmil. The data is sourced from the Southern Poverty Law Center, a well-known nonprofit that specializes in monitoring hate crimes. 
      Although there are known instances of them mislabeling people/events, they are the best source for quickly released data on hate crimes, as FBI data tends to take many months to analyze.",
-     a(href = "https://github.com/Shoklan/data-projects/tree/master/dataworld/gdp-per-state", "(source)")
+     a(href = "https://github.com/Shoklan/data-projects/tree/master/dataworld/gdp-per-state", em("(source)"))
     ),
   
   p("Our second dataset comes from ArcGIS HUB and was updated just last year. It is shared by user lisa_berry and puts down services.arcgis.com as the source. 
      The data itself is from US Bureau of Economic Analysis which is reputable as a agency that has better access to this type of data.",
-     a(href = "https://hub.arcgis.com/datasets/a2a8826c4ba44f89a684000fe7c05b8c_0", "(source)")
+     a(href = "https://hub.arcgis.com/datasets/a2a8826c4ba44f89a684000fe7c05b8c_0", em("(source)"))
     )
   )
 
@@ -154,13 +155,14 @@ change_in_GDP_over_time <- tabPanel(
 diversity_vs_GDP <- tabPanel(
   title = "Diversity vs. GDP",
   titlePanel("How has diversity affected GDP growth by state?"),
+  p(strong("Author"), ": Vishank Rughwani"),
   sidebarLayout(
     sidebar_content_diversity,
     main_content_diversity
   ),
   p("On average, most of the states with the highest GDP growth have a good amount of diversity. Most of the places with under 0.2 population diversity do have growth, however, it's is not as pronounced as the other states. 
     Although, this graph can be looked at from many perspectives and there is no objective answer to this question as of yet. For the most part the data seems to be inconclusive. This may be the case because there are a lot of different factors that effect GDP growth and I only took into account diversity. 
-    On average though, the states GDP's have increased. The mean growth is ", mean_growth)
+    On average though, the states GDP's have increased. The mean growth is ", strong(mean_growth))
 )
 
 
