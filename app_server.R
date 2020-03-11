@@ -8,6 +8,10 @@ gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
 # data wrangling up here if you do not need to use input variables for it
 
+<<<<<<< HEAD
+# make your plots in here 
+server <- function(input, output) {
+=======
 #Mohit's Part
 selected_data_crimes <- hate_crimes%>% filter(hate_crimes$avg_hatecrimes_per_100k_fbi > 2) %>% 
   select("state", "share_non_citizen", "share_non_white", 
@@ -48,10 +52,11 @@ voter_source<- hate_crimes %>%
   mutate("median_household_income" = median_household_income/10000) %>% 
   select(-c("hate_crimes_per_100k_splc", "avg_hatecrimes_per_100k_fbi"))
 
-
-
-server <- function(input, output) {
-  output$plot <- renderPlot({  
+  output$mohit_plot <- renderPlot({  
+    
+    selected_data_crimes <- hate_crimes%>% filter(hate_crimes$avg_hatecrimes_per_100k_fbi > 2) %>% 
+      select("state", "share_non_citizen", "share_non_white", 
+             "share_unemployed_seasonal", "avg_hatecrimes_per_100k_fbi")
     selected_data_gdp <- gdp_by_state %>% 
       select(state = "NAME", "GDP_in_dollars_2016", "Percent_of_US_2016")
     
@@ -68,10 +73,10 @@ server <- function(input, output) {
       geom_smooth(se = FALSE)
     
     return(temp)
-    
   })
   
 # GDP progression (Jaimie)
+>>>>>>> c027ae73f8832444ef385d59b0545238b21ffb48
   output$plot_time <- renderPlot({ 
     map_coor <- map_data("state") %>% mutate(state_name = toupper(region))
     
@@ -118,6 +123,34 @@ server <- function(input, output) {
     return(plot_vishank)
   })
   
+<<<<<<< HEAD
+  
+    output$mohit_plot <- renderPlot({  
+      
+      selected_data_crimes <- hate_crimes%>% filter(hate_crimes$avg_hatecrimes_per_100k_fbi > 2) %>% 
+        select("state", "share_non_citizen", "share_non_white", 
+               "share_unemployed_seasonal", "avg_hatecrimes_per_100k_fbi")
+      selected_data_gdp <- gdp_by_state %>% 
+        select(state = "NAME", "GDP_in_dollars_2016", "Percent_of_US_2016")
+      
+      joined_data_mohit <- full_join(selected_data_crimes,selected_data_gdp,by= "state")
+      joined_data_mohit <- joined_data_mohit %>% filter(joined_data_mohit$share_non_citizen != "Na")
+      View(joined_data_mohit)
+      temp <- ggplot(data = joined_data_mohit, 
+                     mapping = aes_string(x= "state", y= input$color_choice,color= input$feature_choice)) +
+        geom_point() +
+        theme(axis.text.x = element_text(size = 7, angle = 90))   +
+        labs(color = input$feature_choice, y= input$color_choice, 
+             x = "States", title = "Percent of Diverse Characteristics by states and their GDP/Percent Contribution", 
+             shape = "Category") +
+        geom_smooth(se = FALSE)
+      
+      return(temp)
+    }) 
+  
+  
+}
+=======
 # voter connections (Isabella)
   output$voter_plot <- renderPlot({
     voter_data <- voter_source %>% 
@@ -174,4 +207,5 @@ server <- function(input, output) {
 } 
 
 
+>>>>>>> c027ae73f8832444ef385d59b0545238b21ffb48
 

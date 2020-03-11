@@ -1,4 +1,10 @@
 library("shiny")
+<<<<<<< HEAD
+library("dplyr")
+library("tidyr")
+
+=======
+>>>>>>> c027ae73f8832444ef385d59b0545238b21ffb48
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
@@ -34,8 +40,22 @@ voter_panel <- tabPanel(
 
 
 #Mohit's Part
+<<<<<<< HEAD
+hate_crimes_mohit <- hate_crimes%>% filter(hate_crimes$avg_hatecrimes_per_100k_fbi > 2) %>% 
+        select("state", "share_non_citizen", "share_non_white", 
+               "share_unemployed_seasonal", "avg_hatecrimes_per_100k_fbi")
+
+gdp_by_state_mohit <- gdp_by_state %>% 
+        select(state = "NAME", "GDP_in_dollars_2016", "Percent_of_US_2016")
+
+non_citizens <- median(hate_crimes_mohit$share_non_citizen)
+percent <- median(gdp_by_state_mohit$Percent_of_US_2016)
+
+sidebar_content_mohit <- sidebarPanel(
+=======
 
 sidebar_content <- sidebarPanel(
+>>>>>>> c027ae73f8832444ef385d59b0545238b21ffb48
   
   selectInput(
     inputId = "feature_choice",
@@ -53,17 +73,20 @@ sidebar_content <- sidebarPanel(
 )
 
 main_content <- mainPanel(
-  plotOutput("plot"),
+  plotOutput("mohit_plot"),
   p(
-    "Authored By: Mohit Sane"
-  )
+    strong("Authored By") , ": Mohit Sane"
+  ),
+  p("As the plot indicates, the states which have more GDP/Percentage contribution have relatively high diversity proportions. The most visible case if that of California which has high GDP and high diversity as well.",
+    "Using certain statistical methods, I found the median of percent contribution to national GDP for every state to be " ,percent,". This was useful to get a parameter for higher percent of contribution among the states. I analysed the data and found 11 states which have higher percentages than the median",
+    "It was highly intituitive to see that most of these states had a higher share of non-citizens than the median which was", non_citizens)
 )
 
 final_panel <- tabPanel(
   "Economy Trends",
   h2("GDP/Percent Contribution of every state to the US Economy and their diverse classifications"),
   sidebarLayout(
-    sidebar_content,
+    sidebar_content_mohit,
     main_content
   )
 )
