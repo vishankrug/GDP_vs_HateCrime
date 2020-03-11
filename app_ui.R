@@ -74,7 +74,7 @@ ui <- navbarPage(
   final_panel
 )
 
-#######
+#Vishank
 
 gdp_by_state_mutated_growth <- gdp_by_state %>% 
                                select(NAME, GDP_in_dollars_2014:GDP_in_dollars_2016) %>% 
@@ -102,7 +102,7 @@ sidebar_content_time <- sidebarPanel(
     value = c(1997, 2016)
   )
 )
-
+#Vishank
 sidebar_content_diversity <- sidebarPanel(
   p("Move the slider to limit the range for GDP Growth."),
   p(em("Note: The graph may take some time to load.")),
@@ -143,6 +143,7 @@ main_content_diversity <- mainPanel(
   )
 )
 
+#Home page
 home <- tabPanel(
   title = ("Home"),
   
