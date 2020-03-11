@@ -45,8 +45,6 @@ ui <- navbarPage(
 
 #######
 
-
-
 gdp_by_state_mutated_growth <- gdp_by_state %>% 
                                select(NAME, GDP_in_dollars_2014:GDP_in_dollars_2016) %>% 
                                mutate(growth_in_GDP = ((GDP_in_dollars_2016 - GDP_in_dollars_2014)/GDP_in_dollars_2014)*100)
@@ -60,7 +58,8 @@ min_gdp_growth <- trunc(gdp_by_state_mutated_growth
 
 states <- c(gdp_by_state %>% pull(NAME))
 
-sidebar_content <- sidebarPanel(
+# Jaimie Jin
+sidebar_content_time <- sidebarPanel(
   sliderInput(
     inputId = "year",
     label = "Year",
@@ -86,9 +85,9 @@ sidebar_content_diversity <- sidebarPanel(
   )
 )
 
-main_content <- mainPanel(
+main_content_time <- mainPanel(
   plotOutput(
-    outputId = "plot"
+    outputId = "plot_time"
   )
 )
 
@@ -133,8 +132,8 @@ change_in_GDP_over_time <- tabPanel(
   title = "Change in GDP over time",
   titlePanel("How has each state's GDP changed over time?"),
   sidebarLayout(
-    sidebar_content,
-    main_content
+    sidebar_content_time,
+    main_content_time
   )
 )
 
@@ -146,6 +145,7 @@ diversity_vs_GDP <- tabPanel(
     main_content_diversity
   )
 )
+
 
 
 ui <- navbarPage(title = "GDP and Hate Crimes",

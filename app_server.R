@@ -6,7 +6,7 @@ library("tidyr")
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
-
+# data wrangling up here if you do not need to use input variables for it
 
 #Mohit's Part
 selected_data_crimes <- hate_crimes%>% filter(hate_crimes$avg_hatecrimes_per_100k_fbi > 2) %>% 
@@ -33,11 +33,10 @@ server <- function(input, output) {
     return(temp)
     
   })
-  
-#Vishank's Part
 
+  # make your plots in here 
 server <- function(input, output) {
-  output$plot <- renderPlot({ 
+  output$plot_time <- renderPlot({ 
     map_coor <- map_data("state") %>% mutate(state_name = toupper(region))
     
     gdp_data <- gdp_by_state %>% 
