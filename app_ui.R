@@ -3,6 +3,48 @@ library("shiny")
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
+#Mohit's Part
+sidebar_content <- sidebarPanel(
+  
+  selectInput(
+    inputId = "feature_choice",
+    label = "GDP/Percent Contribution",
+    choices = c("GDP_in_dollars_2016","Percent_of_US_2016"),
+    selected = NULL
+  ),
+  
+  selectInput(
+    inputId = "color_choice",
+    label = "Choice of Diversity Characteristics",
+    choices = c("share_non_citizen", "share_non_white", "share_unemployed_seasonal"),
+    selected = NULL
+  )
+)
+
+main_content <- mainPanel(
+  plotOutput("plot"),
+  p(
+    "Authored By: Mohit Sane"
+  )
+)
+
+final_panel <- tabPanel(
+  "Economy Trends",
+  titlePanel("GDP/Percent Contribution of every state to the US Economy and their diverse classifications"),
+  sidebarLayout(
+    sidebar_content,
+    main_content
+  )
+)
+
+
+ui <- navbarPage(
+  title = "Diversity affecting US Economy",
+  final_panel
+)
+
+#######
+
 gdp_by_state_mutated_growth <- gdp_by_state %>% 
                                select(NAME, GDP_in_dollars_2014:GDP_in_dollars_2016) %>% 
                                mutate(growth_in_GDP = ((GDP_in_dollars_2016 - GDP_in_dollars_2014)/GDP_in_dollars_2014)*100)
@@ -18,7 +60,8 @@ min_gdp_growth <- trunc(gdp_by_state_mutated_growth
 
 states <- c("State", gdp_by_state %>% pull(NAME))
 
-sidebar_content <- sidebarPanel(
+# Jaimie Jin
+sidebar_content_time <- sidebarPanel(
   sliderInput(
     inputId = "year",
     label = "Year",
@@ -56,9 +99,9 @@ sidebar_content_diversity <- sidebarPanel(
   p("*Please reset the GDP growth scale if both chosen states do not show")
 )
 
-main_content <- mainPanel(
+main_content_time <- mainPanel(
   plotOutput(
-    outputId = "plot"
+    outputId = "plot_time"
   )
 )
 
@@ -103,8 +146,8 @@ change_in_GDP_over_time <- tabPanel(
   title = "Change in GDP over time",
   titlePanel("How has each state's GDP changed over time?"),
   sidebarLayout(
-    sidebar_content,
-    main_content
+    sidebar_content_time,
+    main_content_time
   )
 )
 
@@ -119,6 +162,7 @@ diversity_vs_GDP <- tabPanel(
     Although, this graph can be looked at from many perspectives and there is no objective answer to this question as of yet. For the most part the data seems to be inconclusive. This may be the case because there are a lot of different factors that effect GDP growth and I only took into account diversity. 
     On average though, the states GDP's have increased. The mean growth is ", mean_growth)
 )
+
 
 
 ui <- navbarPage(title = "GDP and Hate Crimes",
