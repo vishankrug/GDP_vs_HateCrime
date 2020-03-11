@@ -223,5 +223,8 @@ change_in_GDP_over_time <- tabPanel(
 
 
 ui <- navbarPage(title = "GDP and Hate Crimes",
-                 home, change_in_GDP_over_time, voter_panel,
-                 final_panel, diversity_vs_GDP)
+                 home, 
+                 change_in_GDP_over_time, 
+                 voter_panel,
+                 final_panel, 
+                 diversity_vs_GDP)

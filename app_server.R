@@ -56,7 +56,6 @@ voter_source<- hate_crimes %>%
     
     joined_data_mohit <- full_join(selected_data_crimes,selected_data_gdp,by= "state")
     joined_data_mohit <- joined_data_mohit %>% filter(joined_data_mohit$share_non_citizen != "Na")
-    View(joined_data_mohit)
     temp <- ggplot(data = joined_data_mohit, 
                    mapping = aes_string(x= "state", y= input$color_choice,color= input$feature_choice)) +
       geom_point() +
@@ -127,7 +126,6 @@ voter_source<- hate_crimes %>%
       
       joined_data_mohit <- full_join(selected_data_crimes,selected_data_gdp,by= "state")
       joined_data_mohit <- joined_data_mohit %>% filter(joined_data_mohit$share_non_citizen != "Na")
-      View(joined_data_mohit)
       temp <- ggplot(data = joined_data_mohit, 
                      mapping = aes_string(x= "state", y= input$color_choice,color= input$feature_choice)) +
         geom_point() +
