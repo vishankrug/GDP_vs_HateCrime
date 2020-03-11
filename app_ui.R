@@ -7,6 +7,8 @@ gdp_by_state_mutated_growth <- gdp_by_state %>%
                                select(NAME, GDP_in_dollars_2014:GDP_in_dollars_2016) %>% 
                                mutate(growth_in_GDP = ((GDP_in_dollars_2016 - GDP_in_dollars_2014)/GDP_in_dollars_2014)*100)
 
+mean_growth <- round(mean(gdp_by_state_mutated_growth$growth_in_GDP), 2)
+
 max_gdp_growth <- ceiling(gdp_by_state_mutated_growth 
                           %>% filter ( growth_in_GDP == max(growth_in_GDP)) 
                           %>% pull(growth_in_GDP))
@@ -50,7 +52,8 @@ sidebar_content_diversity <- sidebarPanel(
     label = "State 2",
     choice = states,
     selected = "State"
-  )
+  ),
+  p("*Please reset the GDP growth scale if both chosen states do not show")
 )
 
 main_content <- mainPanel(
@@ -111,7 +114,10 @@ diversity_vs_GDP <- tabPanel(
   sidebarLayout(
     sidebar_content_diversity,
     main_content_diversity
-  )
+  ),
+  p("On average, most of the states with the highest GDP growth have a good amount of diversity. Most of the places with under 0.2 population diversity do have growth, however, it's is not as pronounced as the other states. 
+    Although, this graph can be looked at from many perspectives and there is no objective answer to this question as of yet. For the most part the data seems to be inconclusive. This may be the case because there are a lot of different factors that effect GDP growth and I only took into account diversity. 
+    On average though, the states GDP's have increased. The mean growth is ", mean_growth)
 )
 
 
