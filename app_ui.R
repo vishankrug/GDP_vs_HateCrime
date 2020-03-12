@@ -143,7 +143,13 @@ change_time <- tabPanel(
   sidebarLayout(
     sidebar_content_time,
     main_content_time),
-  p(textOutput(outputId = "analysis_result"))
+  h3("About the Plot"),
+  p("This is  a choropleth map. When in the state of comparing GDP over different years, I used the GDP data, took the GDP in dollars from the higher year and subtracted it from the lower year and calculated the percent growth. 
+    Meanwhile, for the individual year, I use the GDP data in dollars."),
+  h3("Why does it matter?"),
+  p("We can use rates of change to compare growth, which would help standardize any values we get. This would allow us to compare different states to each other more equally. In doing so, we can see which states are most affected by any overall GDP trends more effectively. We can use the GDP dataset to allow us to track this."),
+  h3("What do we learn from the above graph?"),
+  p("From the map, we can see how each state compares to each other. ", textOutput(outputId = "analysis_result"))
 )
 
 
