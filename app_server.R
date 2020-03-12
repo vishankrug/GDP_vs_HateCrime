@@ -100,25 +100,33 @@ server <- function(input, output) {
   })
   
   output$analysis_result <- renderText({
+    gdp_data_single <- gdp_by_state
+    gdp_data_range <- gdp_by_state
+    
     if (input$checkbox) {
-      gdp_mean <- mean(gdp_data_range$gdp_change)
-      gdp_max <- max(gdp_data_range$gdp_change)
-      max_state <- gdp_data %>% filter(gdp_change == max(gdp_data$gdp_change)) %>% pull(state_name)
-      
-      statement <- paste0("For year ", input$single[1], ", across the US, the average GDP is ", gdp_mean,
-       " and the state with the highest GDP is ", max_state,", with a GDP of ", gdp_max, ".")
-    } else {
+      gdp_data_single <- gdp_by_state %>%
+        mutate(gdp_change = gdp_by_state[[paste0("GDP_in_dollars_", input$single[1])]], state_name = toupper(NAME)) %>%
+        select(gdp_change, state_name)
       gdp_mean <- mean(gdp_data_single$gdp_change)
       gdp_max <- max(gdp_data_single$gdp_change)
-      max_state <- gdp_data_single %>% filter(gdp_change == max(gdp_data$gdp_change)) %>% pull(state_name)
-      
+      max_state <- gdp_data_single %>% filter(gdp_change == max(gdp_data_single$gdp_change)) %>% pull(state_name)
+      statement <- paste0("For year ", input$single[1], ", across the US, the average GDP is ", gdp_mean,
+                          " and the state with the highest GDP is ", max_state,", with a GDP of ", gdp_max, ".")
+    } else {
+      gdp_data_range <- gdp_by_state %>% 
+        mutate(gdp_change = (
+          gdp_by_state[[paste0("GDP_in_dollars_", input$range[2])]] - gdp_by_state[[paste0("GDP_in_dollars_", input$range[1])]])/gdp_by_state[[paste0("GDP_in_dollars_", input$range[1])]] * 100 , state_name = toupper(NAME)) %>%
+        select(gdp_change, state_name)
+      gdp_mean <- mean(gdp_data_range$gdp_change)
+      gdp_max <- max(gdp_data_range$gdp_change)
+      max_state <- gdp_data_range %>% filter(gdp_change == max(gdp_data_range$gdp_change)) %>% pull(state_name)
       statement <- paste0("Between ", input$range[1]," and ", input$range[2],", with an average of ",
-        gdp_mean,
-        ", one can see that states have increased in their GDP",
-        max_state,
-        "has the highest percent growth of ",
-        gdp_max,
-        ". With these results, we can see which states may need more support compared to ones who are doing well as a result, the states can recover from incidents and continue to increase their GDP."
+                          gdp_mean,
+                          ", one can see that states have increased in their GDP",
+                          max_state,
+                          "has the highest percent growth of ",
+                          gdp_max,
+                          ". With these results, we can see which states may need more support compared to ones who are doing well as a result, the states can recover from incidents and continue to increase their GDP."
       )
     }
     return(statement)
