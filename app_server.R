@@ -58,7 +58,7 @@ server <- function(input, output) {
     temp <- ggplot(data = joined_data_mohit, 
                    mapping = aes_string(x= "state", y= input$color_choice,color= input$feature_choice)) +
       geom_point() +
-      theme(axis.text.x = element_text(size = 7, angle = 90))   +
+      theme(axis.text.x = element_text(size = 7, angle = 90), rect = element_rect(fill = '#fcfcfc', colour = '#fcfcfc'))   +
       labs(color = input$feature_choice, y= input$color_choice, 
            x = "States", title = "Percent of Diverse Characteristics by states and their GDP/Percent Contribution", 
            shape = "Category") +
@@ -109,7 +109,7 @@ server <- function(input, output) {
     
     plot_vishank <- ggplot(data = joined_data_vishank) + geom_col(mapping = aes(x = reorder(NAME, -growth_in_GDP), y = growth_in_GDP, fill = cut)) +
       labs(title = "How does diversity affect GDP Growth in States of US", x = "State", y = "% Growth in GDP (2014 to 2016)", fill = "Share of population = non-white")+
-      theme(axis.text.x = element_text(size = 7, angle = 90))
+      theme(axis.text.x = element_text(size = 7, angle = 90), rect = element_rect(fill = '#fcfcfc', colour = '#fcfcfc'))
     
     return(plot_vishank)
   })
@@ -128,7 +128,7 @@ server <- function(input, output) {
       temp <- ggplot(data = joined_data_mohit, 
                      mapping = aes_string(x= "state", y= input$color_choice,color= input$feature_choice)) +
         geom_point() +
-        theme(axis.text.x = element_text(size = 7, angle = 90))   +
+        theme(axis.text.x = element_text(size = 7, angle = 90), rect = element_rect(fill = '#fcfcfc', colour = '#fcfcfc'))   +
         labs(color = input$feature_choice, y= input$color_choice, 
              x = "States", title = "Percent of Diverse Characteristics by states and their GDP/Percent Contribution", 
              shape = "Category") +
@@ -158,7 +158,7 @@ server <- function(input, output) {
     voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump))) + 
       geom_point(mapping = aes(y = value, shape = category, color = category)) +
       labs(x = "States", y = "Value", color = "Category", shape = "Category") +
-      theme(axis.text.x = element_text(size = 8, angle = 90), legend.position = "top") +
+      theme(axis.text.x = element_text(size = 8, angle = 90), legend.position = "top", rect = element_rect(fill = '#fcfcfc', colour = '#fcfcfc')) +
       scale_shape(labels = axis_values) + 
       scale_color_discrete(labels = axis_values)
     
@@ -181,7 +181,8 @@ server <- function(input, output) {
     voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump))) + 
       geom_point(mapping = aes(y = value, shape = category, color = category)) +
       labs(x = "States", y = "Value", color = "Category", shape = "Category") +
-      theme(axis.text.x = element_text(size = 8, angle = 90), legend.position = "none") +
+      theme(axis.text.x = element_text(size = 8, angle = 90), legend.position = "none", 
+            rect = element_rect(fill = '#fcfcfc', colour = '#fcfcfc')) +
       scale_shape(labels = axis_values) + 
       scale_color_discrete(labels = axis_values) + 
       coord_cartesian(xlim = voter_ranges$x, ylim = voter_ranges$y, expand = FALSE)
