@@ -6,9 +6,6 @@ library("tidyr")
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
-# data wrangling up here if you do not need to use input variables for it
-
-# make your plots in here 
 server <- function(input, output) {
 
 # data for the voter panel (Isabella)
