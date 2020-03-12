@@ -82,7 +82,7 @@ main_content <- mainPanel(
   ),
   p("As the plot indicates, the states which have more GDP/Percentage contribution have relatively high diversity proportions. The most visible case if that of California which has high GDP and high diversity as well.",
     "Using certain statistical methods, I found the median of percent contribution to national GDP for every state to be " ,percent,". This was useful to get a parameter for higher percent of contribution among the states. I analysed the data and found 11 states which have higher percentages than the median",
-    "It was highly intituitive to see that most of these states had a higher share of non-citizens than the median which was", non_citizens)
+    "It was highly intituitive to see that most of these states had a higher share of non-citizens than the median which was 0.05")
 )
 
 final_panel <- tabPanel(
@@ -101,24 +101,32 @@ ui <- navbarPage(
 )
 
 # Jaimie Jin
-gdp_data <- gdp_by_state %>% 
-  mutate(gdp_change = (GDP_in_dollars_2016 - GDP_in_dollars_1997)/GDP_in_dollars_1997 * 100 , state_name = toupper(NAME)) %>%
-  select(gdp_change, state_name)
-
-gdp_mean <- mean(gdp_data$gdp_change)
-
-gdp_max <- max(gdp_data$gdp_change)
-
-max_state <- gdp_data %>% filter(gdp_change == max(gdp_data$gdp_change)) %>% pull(state_name)
-
-sidebar_content_time <- sidebarPanel(
-  sliderInput(
-    inputId = "year",
+  sidebar_content_time <- sidebarPanel(
+    checkboxInput(
+      inputId = "checkbox", 
+      label = "View Individual Year", 
+      value = FALSE),
+  conditionalPanel(
+    condition = "input.checkbox == false",
+    sliderInput(
+      inputId = "range",
+      label = "Year",
+      sep = "",
+      min = 1997,
+      max = 2016,
+      value = c(1997, 2016)
+    )
+  ),
+  conditionalPanel(
+    condition="input.checkbox == true",
+    sliderInput(
+    inputId = "single",
     label = "Year",
     sep = "",
     min = 1997,
     max = 2016,
-    value = c(1997, 2016)
+    value = 1997
+    )
   )
 )
 
@@ -135,16 +143,7 @@ change_time <- tabPanel(
   sidebarLayout(
     sidebar_content_time,
     main_content_time),
-  p("Between 1997 and 2016, with an average of ",
-    gdp_mean,
-    ", one can see that states have increased in their GDP around 100% since 1997. Surprisingly, ",
-    max_state,
-    "has the highest percent growth of ",
-    gdp_max,
-    ". This could be because something happened in North Dakota in 1997, causing low GDP and it has since recovered, which is a good sign. 
-    On the other hand, states like Michigan are on the lower end of the growth increase and implies that somthing happened in 2016 that caused a GDP that is similar to that of 1997. 
-    With these results, we can see which states may need more support compared to ones who are doing well as a result, the states can recover from incidents and continue to increase their GDP."
-  )
+  p(textOutput(outputId = "analysis_result"))
 )
 
 
@@ -154,6 +153,7 @@ gdp_by_state_mutated_growth <- gdp_by_state %>%
   mutate(growth_in_GDP = ((GDP_in_dollars_2016 - GDP_in_dollars_2014)/GDP_in_dollars_2014)*100)
 
 mean_growth <- round(mean(gdp_by_state_mutated_growth$growth_in_GDP), 2)
+mean_diversity <- round(mean(hate_crimes$share_non_white), 2)
 
 max_gdp_growth <- ceiling(gdp_by_state_mutated_growth 
                           %>% filter ( growth_in_GDP == max(growth_in_GDP)) 
@@ -209,7 +209,7 @@ diversity_vs_GDP <- tabPanel(
   ),
   p("On average, most of the states with the highest GDP growth have a good amount of diversity. Most of the places with under 0.2 population diversity do have growth, however, it's is not as pronounced as the other states. 
     Although, this graph can be looked at from many perspectives and there is no objective answer to this question as of yet. For the most part the data seems to be inconclusive. This may be the case because there are a lot of different factors that effect GDP growth and I only took into account diversity. 
-    On average though, the states GDP's have increased. The mean growth is ", strong(mean_growth))
+    On average though, the states GDP's have increased. The mean growth is ", strong(mean_growth), "while the mean diversity is ", strong(mean_diversity), "This shows an increase in GDP while there is diversity")
 )
 
 #Home page
@@ -262,3 +262,4 @@ ui <- navbarPage(title = "GDP and Hate Crimes",
                  voter_panel,
                  final_panel, 
                  diversity_vs_GDP)
+

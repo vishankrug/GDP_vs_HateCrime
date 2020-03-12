@@ -2,6 +2,7 @@ library("shiny")
 library("dplyr")
 library("ggplot2")
 library("tidyr")
+library("maps")
 
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
@@ -70,26 +71,66 @@ server <- function(input, output) {
   # GDP progression (Jaimie)
   output$plot_time <- renderPlot({ 
     map_coor <- map_data("state") %>% mutate(state_name = toupper(region))
+    gdp_data_single <- gdp_by_state
+    gdp_data_range <- gdp_by_state
     
-    gdp_data <- gdp_by_state %>% 
-      mutate(gdp_change = (
-        gdp_by_state[[paste0("GDP_in_dollars_", input$year[2])]] - gdp_by_state[[paste0("GDP_in_dollars_", input$year[1])]])/gdp_by_state[[paste0("GDP_in_dollars_", input$year[1])]] * 100 , state_name = toupper(NAME)) %>%
-      select(gdp_change, state_name)
-    
-    gdp_mean <- mean(gdp_data$gdp_change)
-    
-    gdp_max <- max(gdp_data$gdp_change)
-    
-    gdp_data_all <- left_join(gdp_data, map_coor, by="state_name")
-    
-    plot <- ggplot(data = gdp_data_all) +
-    geom_polygon(aes(x = long, y = lat, group= group, fill = gdp_change)) +
-    coord_quickmap() +
-    scale_fill_distiller(palette = "Spectral") +
-    theme_void() +
-    labs(title = "Percent Growth in GDP", fill = "Change")
-    
+    if (input$checkbox) {
+      gdp_data_single <- gdp_by_state %>%
+        mutate(gdp_change = gdp_by_state[[paste0("GDP_in_dollars_", input$single[1])]], state_name = toupper(NAME)) %>%
+        select(gdp_change, state_name)
+      gdp_data_all <- left_join(gdp_data_single, map_coor, by="state_name")
+    } else {
+      gdp_data_range <- gdp_by_state %>% 
+        mutate(gdp_change = (
+          gdp_by_state[[paste0("GDP_in_dollars_", input$range[2])]] - gdp_by_state[[paste0("GDP_in_dollars_", input$range[1])]])/gdp_by_state[[paste0("GDP_in_dollars_", input$range[1])]] * 100 , state_name = toupper(NAME)) %>%
+        select(gdp_change, state_name)
+      gdp_data_all <- left_join(gdp_data_range, map_coor, by="state_name")
+    }
+    plot <- ggplot(data = gdp_data_all) + 
+      geom_polygon(aes(x = long, y = lat, group= group, fill = gdp_change)) +
+      coord_quickmap() +
+      scale_fill_distiller(palette = "Spectral") +
+      theme_void()
+      
+    if (input$checkbox) {
+      plot <- plot + labs(title = "GDP in dollars", fill = "Dollar Amount")
+    } else {
+      plot <- plot + labs(title = "Percent Growth in GDP", fill = "Change")
+    }
     return(plot)
+  })
+  
+  output$analysis_result <- renderText({
+    gdp_data_single <- gdp_by_state
+    gdp_data_range <- gdp_by_state
+    
+    if (input$checkbox) {
+      gdp_data_single <- gdp_by_state %>%
+        mutate(gdp_change = gdp_by_state[[paste0("GDP_in_dollars_", input$single[1])]], state_name = toupper(NAME)) %>%
+        select(gdp_change, state_name)
+      gdp_mean <- mean(gdp_data_single$gdp_change)
+      gdp_max <- max(gdp_data_single$gdp_change)
+      max_state <- gdp_data_single %>% filter(gdp_change == max(gdp_data_single$gdp_change)) %>% pull(state_name)
+      statement <- paste0("For year ", input$single[1], ", across the US, the average GDP is ", gdp_mean,
+                          " and the state with the highest GDP is ", max_state,", with a GDP of ", gdp_max, ".")
+    } else {
+      gdp_data_range <- gdp_by_state %>% 
+        mutate(gdp_change = (
+          gdp_by_state[[paste0("GDP_in_dollars_", input$range[2])]] - gdp_by_state[[paste0("GDP_in_dollars_", input$range[1])]])/gdp_by_state[[paste0("GDP_in_dollars_", input$range[1])]] * 100 , state_name = toupper(NAME)) %>%
+        select(gdp_change, state_name)
+      gdp_mean <- mean(gdp_data_range$gdp_change)
+      gdp_max <- max(gdp_data_range$gdp_change)
+      max_state <- gdp_data_range %>% filter(gdp_change == max(gdp_data_range$gdp_change)) %>% pull(state_name)
+      statement <- paste0("Between ", input$range[1]," and ", input$range[2],", with an average of ",
+                          gdp_mean,
+                          ", one can see that states have increased in their GDP. ",
+                          max_state,
+                          " has the highest percent growth of ",
+                          gdp_max,
+                          ". With these results, we can see which states may need more support compared to ones who are doing well as a result, the states can recover from incidents and continue to increase their GDP."
+      )
+    }
+    return(statement)
   })
   
   # diversity (Vishank)
