@@ -2,6 +2,7 @@ library("shiny")
 library("dplyr")
 library("ggplot2")
 library("tidyr")
+library("maps")
 
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
@@ -122,9 +123,9 @@ server <- function(input, output) {
       max_state <- gdp_data_range %>% filter(gdp_change == max(gdp_data_range$gdp_change)) %>% pull(state_name)
       statement <- paste0("Between ", input$range[1]," and ", input$range[2],", with an average of ",
                           gdp_mean,
-                          ", one can see that states have increased in their GDP",
+                          ", one can see that states have increased in their GDP. ",
                           max_state,
-                          "has the highest percent growth of ",
+                          " has the highest percent growth of ",
                           gdp_max,
                           ". With these results, we can see which states may need more support compared to ones who are doing well as a result, the states can recover from incidents and continue to increase their GDP."
       )
