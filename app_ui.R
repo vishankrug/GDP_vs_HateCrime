@@ -239,7 +239,8 @@ home <- tabPanel(
   p("Our second dataset comes from ArcGIS HUB and was updated just last year. It is shared by user lisa_berry and puts down services.arcgis.com as the source. 
      The data itself is from US Bureau of Economic Analysis which is reputable as a agency that has better access to this type of data.",
      a(href = "https://hub.arcgis.com/datasets/a2a8826c4ba44f89a684000fe7c05b8c_0", em("(source)"))
-    )
+    ),
+  p("For more information on the data and a data report, please go ", a(href = "https://info201a-wi20.github.io/project-report-jinjaimie/", em("here")), ".")
   )
 
 
