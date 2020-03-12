@@ -21,12 +21,13 @@ voter_choices <- selectInput(inputId = "voter_values",
                                 "Change in GDP, 2008-2016" = "gdp_2008_2016"),
              selected = "median_household_income"
 )
+outlier_check <- checkboxInput(inputId = "out_check", label = "Exclude outliers", value = FALSE)
 
 voter_panel <- tabPanel(
   title = "Voting Factors",
   h2("What factors affect how people vote?"),
   hr(),
-  h4("Click on the left plot to zoom."),
+  h4("Click and drag on the left plot to zoom."),
   fluidRow(
     column(6,
            plotOutput(outputId = "voter_plot", 
@@ -41,6 +42,7 @@ voter_panel <- tabPanel(
   ),
   hr(),
   voter_choices,
+  outlier_check,
   p(textOutput(outputId = "correlation_results"))
 )
 
@@ -80,7 +82,7 @@ main_content <- mainPanel(
   ),
   p("As the plot indicates, the states which have more GDP/Percentage contribution have relatively high diversity proportions. The most visible case if that of California which has high GDP and high diversity as well.",
     "Using certain statistical methods, I found the median of percent contribution to national GDP for every state to be " ,percent,". This was useful to get a parameter for higher percent of contribution among the states. I analysed the data and found 11 states which have higher percentages than the median",
-    "It was highly intituitive to see that most of these states had a higher share of non-citizens than the median which was", non_citizens)
+    "It was highly intituitive to see that most of these states had a higher share of non-citizens than the median which was 0.05")
 )
 
 final_panel <- tabPanel(

@@ -188,6 +188,10 @@ server <- function(input, output) {
   voter_ranges <- reactiveValues(x = NULL, y = NULL)  
   
   output$voter_plot <- renderPlot({
+    if (input$out_check){
+      voter_source <- filter(voter_source, voter_source$state != "District of Columbia")
+    }
+    
     voter_data <- voter_source %>% 
       select("share_voters_voted_trump", "voters_voted_trump", "state", input$voter_values)
     
@@ -200,8 +204,8 @@ server <- function(input, output) {
     axis_values <- c(axis_names[colnames(voter_names)]) %>% 
       unlist()
     
-    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump))) + 
-      geom_point(mapping = aes(y = value, shape = category, color = category)) +
+    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump), y = value)) + 
+      geom_point(mapping = aes(shape = category, color = category)) +
       labs(x = "States", y = "Value", color = "Category", shape = "Category") +
       theme(axis.text.x = element_text(size = 8, angle = 90), legend.position = "top", rect = element_rect(fill = '#fcfcfc', colour = '#fcfcfc')) +
       scale_shape(labels = axis_values) + 
@@ -211,6 +215,10 @@ server <- function(input, output) {
   })
   
   output$voter_plot_zoom <- renderPlot({
+    if (input$out_check){
+      voter_source <- filter(voter_source, voter_source$state != "District of Columbia")
+    }
+    
     voter_data <- voter_source %>% 
       select("share_voters_voted_trump", "voters_voted_trump", "state", input$voter_values)
     
@@ -223,8 +231,8 @@ server <- function(input, output) {
     axis_values <- c(axis_names[colnames(voter_names)]) %>% 
       unlist()
     
-    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump))) + 
-      geom_point(mapping = aes(y = value, shape = category, color = category)) +
+    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump), y = value)) + 
+      geom_point(mapping = aes(shape = category, color = category)) +
       labs(x = "States", y = "Value", color = "Category", shape = "Category") +
       theme(axis.text.x = element_text(size = 8, angle = 90), legend.position = "none", 
             rect = element_rect(fill = '#fcfcfc', colour = '#fcfcfc')) +
@@ -248,6 +256,10 @@ server <- function(input, output) {
   })
   
   output$correlation_results <- renderText({
+    if (input$out_check){
+      voter_source <- filter(voter_source, voter_source$state != "District of Columbia")
+    }
+    
     correlation <- cor(x = voter_source$voters_voted_trump, y = voter_source[input$voter_values], use = "complete.obs") %>% 
       round(digits = 4)
     sentence_finish <- list("median_household_income" = "median household income",
@@ -262,23 +274,37 @@ server <- function(input, output) {
                        "gdp_2008_2016" = "change in GDP from 2008-2016")
     if (correlation >= 0 & correlation < 0.2){
       cor_finding <- "very weak positive"
+      ending_statement <- "This demonstrates that this factor does not have much connection to voting decisions."
     } else if (correlation >= 0.2 & correlation < 0.4){
       cor_finding <- "weak positive"
+      ending_statement <- "This demonstrates that this factor may have a slight connection to increased voting for Trump."
     } else if (correlation >= 0.4 & correlation <= 0.5){
       cor_finding <- "moderately positive"
+      ending_statement <- "This demonstrates that this factor may have a connection to how people make voting decisions."
     } else if (correlation >= 0.5 & correlation <= 1){
       cor_finding <- "strong positive"
+      ending_statement <- "This demonstrates that this factor likely has a huge connection to how people make voting decisions. This indicates some significance in the relationship between the two."
     }else if (correlation < 0 & correlation > -0.2){
       cor_finding <- "very weak negative"
+      ending_statement <- "This demonstrates that this factor does not have much connection to voting decisions."
     } else if (correlation <= -0.2 & correlation > -0.4){
       cor_finding <- "weak negative"
+      ending_statement <- "This demonstrates that this factor may have a slight connection to decreased voting for Trump."
     } else if (correlation <= -0.4 & correlation > -0.5){
       cor_finding <- "moderately negative"
+      ending_statement <- "This demonstrates that this factor may have a connection to how people make voting decisions."
     }else {
       cor_finding <- "strong negative"
+      ending_statement <- "This demonstrates that this factor likely has a huge connection to how people make voting decisions. This indicates some significance in the relationship between the two."
     } 
     cor_statement <- paste0("There is a ", cor_finding, " correlation between how people voted in 2016 and the ", 
-                           sentence_finish[input$voter_values], ", with a correlation coefficient of ", correlation, ".")
+                           sentence_finish[input$voter_values], ", with a correlation coefficient of ", correlation)
+    
+    if (input$out_check){
+      cor_statement <- paste0(cor_statement, ", excluding any extreme outliers (i.e. the District of Columbia). ", ending_statement)
+    } else {
+      cor_statement <- paste0(cor_statement, ". ", ending_statement)
+    }
     return(cor_statement)
   })
 } 
