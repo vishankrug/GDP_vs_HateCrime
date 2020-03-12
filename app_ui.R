@@ -21,12 +21,13 @@ voter_choices <- selectInput(inputId = "voter_values",
                                 "Change in GDP, 2008-2016" = "gdp_2008_2016"),
              selected = "median_household_income"
 )
+correlation_line <- checkboxInput(inputId = "corr_line", label = "Show correlation line", value = FALSE)
 
 voter_panel <- tabPanel(
   title = "Voting Factors",
   h2("What factors affect how people vote?"),
   hr(),
-  h4("Click on the left plot to zoom."),
+  h4("Click and drag on the left plot to zoom."),
   fluidRow(
     column(6,
            plotOutput(outputId = "voter_plot", 
@@ -41,6 +42,7 @@ voter_panel <- tabPanel(
   ),
   hr(),
   voter_choices,
+  correlation_line,
   p(textOutput(outputId = "correlation_results"))
 )
 

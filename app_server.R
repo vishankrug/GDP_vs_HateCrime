@@ -159,12 +159,16 @@ server <- function(input, output) {
     axis_values <- c(axis_names[colnames(voter_names)]) %>% 
       unlist()
     
-    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump))) + 
-      geom_point(mapping = aes(y = value, shape = category, color = category)) +
+    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump), y = value)) + 
+      geom_point(mapping = aes(shape = category, color = category)) +
       labs(x = "States", y = "Value", color = "Category", shape = "Category") +
       theme(axis.text.x = element_text(size = 8, angle = 90), legend.position = "top", rect = element_rect(fill = '#fcfcfc', colour = '#fcfcfc')) +
       scale_shape(labels = axis_values) + 
       scale_color_discrete(labels = axis_values)
+    
+    if(input$corr_line){
+      voter_return <- voter_return + geom_smooth(se = FALSE)
+    }
     
     return(voter_return)
   })
@@ -182,14 +186,18 @@ server <- function(input, output) {
     axis_values <- c(axis_names[colnames(voter_names)]) %>% 
       unlist()
     
-    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump))) + 
-      geom_point(mapping = aes(y = value, shape = category, color = category)) +
+    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump), y = value)) + 
+      geom_point(mapping = aes(shape = category, color = category)) +
       labs(x = "States", y = "Value", color = "Category", shape = "Category") +
       theme(axis.text.x = element_text(size = 8, angle = 90), legend.position = "none", 
             rect = element_rect(fill = '#fcfcfc', colour = '#fcfcfc')) +
       scale_shape(labels = axis_values) + 
       scale_color_discrete(labels = axis_values) + 
       coord_cartesian(xlim = voter_ranges$x, ylim = voter_ranges$y, expand = FALSE)
+    
+    if(input$corr_line){
+      voter_return <- voter_return + geom_smooth(se = FALSE)
+    }
     
     return(voter_return)
   })
