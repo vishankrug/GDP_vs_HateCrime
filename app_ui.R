@@ -1,17 +1,19 @@
 library("shiny")
 library("dplyr")
 library("tidyr")
+library("shinythemes")
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
 # (Isabella) voter data
-voter_choices <- radioButtons(inputId = "voter_values", 
+voter_choices <- selectInput(inputId = "voter_values", 
+             width = '600px',
              label = "Possible comparison values",
              choices = list("Median household income (in $10,000s)" = "median_household_income", 
                                 "Percent of population unemployed (seasonally adjusted)" = "share_unemployed_seasonal",
                                 "Percent of population in metro areas" = "share_population_in_metro_areas",
                                 "Percent of adults 25 and older with a high school degree" = "share_population_with_high_school_degree",
-                                "Percent of population that are not citizens" = "share_non_citizen",
+                                "Percent of population that is not a US citizen" = "share_non_citizen",
                                 "Percent of white residents living in poverty" = "share_white_poverty",
                                 "Gini index (an inequality coefficient)" = "gini_index",
                                 "Percent of population that is not white" = "share_non_white",
@@ -23,15 +25,23 @@ voter_choices <- radioButtons(inputId = "voter_values",
 voter_panel <- tabPanel(
   title = "Voting Factors",
   h2("What factors affect how people vote?"),
-  sidebarLayout(
-    sidebarPanel(
-      voter_choices
-    ),
-    mainPanel(
-      plotOutput(outputId = "voter_plot"),
-      p(textOutput(outputId = "correlation_results"))
+  hr(),
+  h4("Click on the left plot to zoom."),
+  fluidRow(
+    column(6,
+           plotOutput(outputId = "voter_plot", 
+                      brush = brushOpts(
+                        id = "plot_brush",
+                        resetOnNew = TRUE
+                        )
+           )   
+    ), column(6,
+              plotOutput(outputId = "voter_plot_zoom")
     )
-  )
+  ),
+  hr(),
+  voter_choices,
+  p(textOutput(outputId = "correlation_results"))
 )
 
 
@@ -215,10 +225,11 @@ home <- tabPanel(
   p("In the ten days after the 2016 election, there was a much higher number of hate incidents reported to the Southern Poverty Law center than normal - around 900, an average of 90 per day. 
      Most data collected by federal sources includes only hate crimes, which refers to prosecutable offenses - only a fraction of hate incidents. Our data focuses on all hate incidents, which includes non-prosecutable events as well. 
      Our data combines the number of hate crimes per 100,000 people, as well as a variety of other socioeconomic factors, such as household income, racial data, and the Gini Index, which measures economic inequality. 
-     There is also data on voting percentages in each state. We are combining this dataset with another dataset that contains records on gross domestic product (GDP) by state from 1997 to 2016. 
-     Although GDP is not a complete measure of economic wealth and productivity, it provides a universal measure of comparison. Through comparing both sets of data, we hope to determine what factors make certain locations more vulnerable to hate incidents. 
-    In understanding this, we can possibly figure out how to prevent more hate incidents in the future."
-    ),
+     There is also data on voting percentages in each state."), 
+     
+  p("We are combining this dataset with another dataset that contains records on gross domestic product (GDP) by state from 1997 to 2016. 
+    Although GDP is not a complete measure of economic wealth and productivity, it provides a universal measure of comparison. Through comparing both sets of data, we hope to determine what factors make certain locations more vulnerable to hate incidents. 
+    In understanding this, we can possibly figure out how to prevent more hate incidents in the future."),
   
   p("Our first dataset comes from an open Github contributor called fivethirtyeight. The data is sourced from the Southern Poverty Law Center, a well-known nonprofit that specializes in monitoring hate crimes. 
      Although there are known instances of them mislabeling people/events, they are the best source for quickly released data on hate crimes, as FBI data tends to take many months to analyze.",
@@ -243,6 +254,7 @@ change_in_GDP_over_time <- tabPanel(
 
 
 ui <- navbarPage(title = "GDP and Hate Crimes",
+                 theme = shinytheme("simplex"),
                  home, 
                  change_time, 
                  voter_panel,

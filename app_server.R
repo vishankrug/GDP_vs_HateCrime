@@ -6,8 +6,6 @@ library("tidyr")
 hate_crimes <- read.csv("data/hate_crimes.csv", stringsAsFactors = FALSE)
 gdp_by_state <- read.csv("data/gdp_by_state.csv", stringsAsFactors = FALSE)
 
-server <- function(input, output) {
-
 # data for the voter panel (Isabella)
 gdp_rate_of_change <- gdp_by_state %>% 
   select("NAME", "GDP_in_dollars_1997":"GDP_in_dollars_2016") %>% 
@@ -24,7 +22,7 @@ avg_change_2008_2016 <- gdp_rate_of_change %>%
   summarize("gdp_2008_2016" = mean(percent_change, na.rm = TRUE)) %>% 
   rename("state" = NAME)
 
-axis_names <- list("share_voters_voted_trump" = "Population that voted for Trump (%)",
+axis_names <- list("voters_voted_trump" = "Population that voted for Trump (%)",
                    "median_household_income" = "Median household income (in $10,000s)",
                    "share_unemployed_seasonal" = "Percent of population unemployed (seasonally adjusted)",
                    "share_population_in_metro_areas" = "Percent of population in metro areas",
@@ -43,6 +41,10 @@ voter_source<- hate_crimes %>%
   mutate("median_household_income" = median_household_income/10000) %>% 
   select(-c("hate_crimes_per_100k_splc", "avg_hatecrimes_per_100k_fbi"))
 
+
+
+
+server <- function(input, output) {
   output$mohit_plot <- renderPlot({  
     
     selected_data_crimes <- hate_crimes%>% filter(hate_crimes$avg_hatecrimes_per_100k_fbi > 2) %>% 
@@ -65,7 +67,7 @@ voter_source<- hate_crimes %>%
     return(temp)
   })
   
-# GDP progression (Jaimie)
+  # GDP progression (Jaimie)
   output$plot_time <- renderPlot({ 
     map_coor <- map_data("state") %>% mutate(state_name = toupper(region))
     
@@ -141,30 +143,70 @@ voter_source<- hate_crimes %>%
   
   
 # voter connections (Isabella)
+    
+  voter_ranges <- reactiveValues(x = NULL, y = NULL)  
+  
   output$voter_plot <- renderPlot({
     voter_data <- voter_source %>% 
       select("share_voters_voted_trump", "voters_voted_trump", "state", input$voter_values)
     
     voter_names <- voter_data %>% 
-      select(-c("state", "voters_voted_trump"))
+      select(-c("state", "share_voters_voted_trump"))
     
-    voter_data <- gather(voter_data, key = category, value = value, -state, -voters_voted_trump)
+    voter_data <- gather(voter_data, key = category, value = value, -state, -share_voters_voted_trump) %>% 
+      arrange()
     
     axis_values <- c(axis_names[colnames(voter_names)]) %>% 
       unlist()
     
-    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, voters_voted_trump))) + 
+    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump))) + 
       geom_point(mapping = aes(y = value, shape = category, color = category)) +
-      labs(title = "Voting", x = "States", y = "Value", color = "Category", shape = "Category") +
-      theme(axis.text.x = element_text(size = 8, angle = 90)) +
+      labs(x = "States", y = "Value", color = "Category", shape = "Category") +
+      theme(axis.text.x = element_text(size = 8, angle = 90), legend.position = "top") +
       scale_shape(labels = axis_values) + 
       scale_color_discrete(labels = axis_values)
     
     return(voter_return)
   })
   
+  output$voter_plot_zoom <- renderPlot({
+    voter_data <- voter_source %>% 
+      select("share_voters_voted_trump", "voters_voted_trump", "state", input$voter_values)
+    
+    voter_names <- voter_data %>% 
+      select(-c("state", "share_voters_voted_trump"))
+    
+    voter_data <- gather(voter_data, key = category, value = value, -state, -share_voters_voted_trump) %>% 
+      arrange()
+    
+    axis_values <- c(axis_names[colnames(voter_names)]) %>% 
+      unlist()
+    
+    voter_return <- ggplot(data = voter_data, mapping = aes(x = reorder(state, share_voters_voted_trump))) + 
+      geom_point(mapping = aes(y = value, shape = category, color = category)) +
+      labs(x = "States", y = "Value", color = "Category", shape = "Category") +
+      theme(axis.text.x = element_text(size = 8, angle = 90), legend.position = "none") +
+      scale_shape(labels = axis_values) + 
+      scale_color_discrete(labels = axis_values) + 
+      coord_cartesian(xlim = voter_ranges$x, ylim = voter_ranges$y, expand = FALSE)
+    
+    return(voter_return)
+  })
+  
+  observe({
+    brush <- input$plot_brush
+    if (!is.null(brush)) {
+      voter_ranges$x <- c(brush$xmin, brush$xmax)
+      voter_ranges$y <- c(brush$ymin, brush$ymax)
+      
+    } else {
+      voter_ranges$x <- NULL
+      voter_ranges$y <- NULL
+    }
+  })
+  
   output$correlation_results <- renderText({
-    correlation <- cor(x = voter_source$share_voters_voted_trump, y = voter_source[input$voter_values], use = "complete.obs") %>% 
+    correlation <- cor(x = voter_source$voters_voted_trump, y = voter_source[input$voter_values], use = "complete.obs") %>% 
       round(digits = 4)
     sentence_finish <- list("median_household_income" = "median household income",
                        "share_unemployed_seasonal" = "percent of the population that is seasonally unemployed",
@@ -176,17 +218,21 @@ voter_source<- hate_crimes %>%
                        "share_non_white" = "percent of the population that is not white",
                        "gdp_1997_2016" = "change in GDP from 1997-2016",
                        "gdp_2008_2016" = "change in GDP from 2008-2016")
-    if (correlation >= 0 & correlation < 0.4){
+    if (correlation >= 0 & correlation < 0.2){
+      cor_finding <- "very weak positive"
+    } else if (correlation >= 0.2 & correlation < 0.4){
       cor_finding <- "weak positive"
-    } else if (correlation >= 0.4 & correlation < 0.6){
+    } else if (correlation >= 0.4 & correlation <= 0.5){
       cor_finding <- "moderately positive"
-    } else if (correlation >= 0.6 & correlation <= 1){
+    } else if (correlation >= 0.5 & correlation <= 1){
       cor_finding <- "strong positive"
-    } else if (correlation < 0 & correlation > -0.4){
+    }else if (correlation < 0 & correlation > -0.2){
+      cor_finding <- "very weak negative"
+    } else if (correlation <= -0.2 & correlation > -0.4){
       cor_finding <- "weak negative"
-    } else if (correlation <= -0.4 & correlation > -0.6){
+    } else if (correlation <= -0.4 & correlation > -0.5){
       cor_finding <- "moderately negative"
-    } else {
+    }else {
       cor_finding <- "strong negative"
     } 
     cor_statement <- paste0("There is a ", cor_finding, " correlation between how people voted in 2016 and the ", 
