@@ -80,7 +80,7 @@ main_content <- mainPanel(
   ),
   p("As the plot indicates, the states which have more GDP/Percentage contribution have relatively high diversity proportions. The most visible case if that of California which has high GDP and high diversity as well.",
     "Using certain statistical methods, I found the median of percent contribution to national GDP for every state to be " ,percent,". This was useful to get a parameter for higher percent of contribution among the states. I analysed the data and found 11 states which have higher percentages than the median",
-    "It was highly intituitive to see that most of these states had a higher share of non-citizens than the median which was", non_citizens)
+    "It was highly intituitive to see that most of these states had a higher share of non-citizens than the median which was 0.05")
 )
 
 final_panel <- tabPanel(
