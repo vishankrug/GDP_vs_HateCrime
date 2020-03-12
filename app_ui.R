@@ -99,6 +99,16 @@ ui <- navbarPage(
 )
 
 # Jaimie Jin
+gdp_data <- gdp_by_state %>% 
+  mutate(gdp_change = (GDP_in_dollars_2016 - GDP_in_dollars_1997)/GDP_in_dollars_1997 * 100 , state_name = toupper(NAME)) %>%
+  select(gdp_change, state_name)
+
+gdp_mean <- mean(gdp_data$gdp_change)
+
+gdp_max <- max(gdp_data$gdp_change)
+
+max_state <- gdp_data %>% filter(gdp_change == max(gdp_data$gdp_change)) %>% pull(state_name)
+
 sidebar_content_time <- sidebarPanel(
   sliderInput(
     inputId = "year",
@@ -116,12 +126,22 @@ main_content_time <- mainPanel(
   )
 )
 
-change_in_GDP_over_time <- tabPanel(
+change_time <- tabPanel(
   title = "Change in GDP over time",
   h2("How has each state's GDP changed over time?"),
+  p(strong("Author: "), "Jaimie Jin"),
   sidebarLayout(
     sidebar_content_time,
-    main_content_time
+    main_content_time),
+  p("Between 1997 and 2016, with an average of ",
+    gdp_mean,
+    ", one can see that states have increased in their GDP around 100% since 1997. Surprisingly, ",
+    max_state,
+    "has the highest percent growth of ",
+    gdp_max,
+    ". This could be because something happened in North Dakota in 1997, causing low GDP and it has since recovered, which is a good sign. 
+    On the other hand, states like Michigan are on the lower end of the growth increase and implies that somthing happened in 2016 that caused a GDP that is similar to that of 1997. 
+    With these results, we can see which states may need more support compared to ones who are doing well as a result, the states can recover from incidents and continue to increase their GDP."
   )
 )
 
@@ -225,7 +245,7 @@ home <- tabPanel(
 
 change_in_GDP_over_time <- tabPanel(
   title = "Change in GDP over time",
-  titlePanel("How has each state's GDP changed over time?"),
+  h1("How has each state's GDP changed over time?"),
   sidebarLayout(
     sidebar_content_time,
     main_content_time
@@ -236,7 +256,7 @@ change_in_GDP_over_time <- tabPanel(
 ui <- navbarPage(title = "GDP and Hate Crimes",
                  theme = shinytheme("simplex"),
                  home, 
-                 change_in_GDP_over_time, 
+                 change_time, 
                  voter_panel,
                  final_panel, 
                  diversity_vs_GDP)

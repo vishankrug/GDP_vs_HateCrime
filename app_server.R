@@ -76,6 +76,10 @@ server <- function(input, output) {
         gdp_by_state[[paste0("GDP_in_dollars_", input$year[2])]] - gdp_by_state[[paste0("GDP_in_dollars_", input$year[1])]])/gdp_by_state[[paste0("GDP_in_dollars_", input$year[1])]] * 100 , state_name = toupper(NAME)) %>%
       select(gdp_change, state_name)
     
+    gdp_mean <- mean(gdp_data$gdp_change)
+    
+    gdp_max <- max(gdp_data$gdp_change)
+    
     gdp_data_all <- left_join(gdp_data, map_coor, by="state_name")
     
     plot <- ggplot(data = gdp_data_all) +
