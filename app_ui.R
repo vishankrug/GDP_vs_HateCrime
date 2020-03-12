@@ -99,24 +99,32 @@ ui <- navbarPage(
 )
 
 # Jaimie Jin
-gdp_data <- gdp_by_state %>% 
-  mutate(gdp_change = (GDP_in_dollars_2016 - GDP_in_dollars_1997)/GDP_in_dollars_1997 * 100 , state_name = toupper(NAME)) %>%
-  select(gdp_change, state_name)
-
-gdp_mean <- mean(gdp_data$gdp_change)
-
-gdp_max <- max(gdp_data$gdp_change)
-
-max_state <- gdp_data %>% filter(gdp_change == max(gdp_data$gdp_change)) %>% pull(state_name)
-
-sidebar_content_time <- sidebarPanel(
-  sliderInput(
-    inputId = "year",
+  sidebar_content_time <- sidebarPanel(
+    checkboxInput(
+      inputId = "checkbox", 
+      label = "View Individual Year", 
+      value = FALSE),
+  conditionalPanel(
+    condition = "input.checkbox == false",
+    sliderInput(
+      inputId = "range",
+      label = "Year",
+      sep = "",
+      min = 1997,
+      max = 2016,
+      value = c(1997, 2016)
+    )
+  ),
+  conditionalPanel(
+    condition="input.checkbox == true",
+    sliderInput(
+    inputId = "single",
     label = "Year",
     sep = "",
     min = 1997,
     max = 2016,
-    value = c(1997, 2016)
+    value = 1997
+    )
   )
 )
 
@@ -133,16 +141,7 @@ change_time <- tabPanel(
   sidebarLayout(
     sidebar_content_time,
     main_content_time),
-  p("Between 1997 and 2016, with an average of ",
-    gdp_mean,
-    ", one can see that states have increased in their GDP around 100% since 1997. Surprisingly, ",
-    max_state,
-    "has the highest percent growth of ",
-    gdp_max,
-    ". This could be because something happened in North Dakota in 1997, causing low GDP and it has since recovered, which is a good sign. 
-    On the other hand, states like Michigan are on the lower end of the growth increase and implies that somthing happened in 2016 that caused a GDP that is similar to that of 1997. 
-    With these results, we can see which states may need more support compared to ones who are doing well as a result, the states can recover from incidents and continue to increase their GDP."
-  )
+  p(textOutput(outputId = "analysis_result"))
 )
 
 
